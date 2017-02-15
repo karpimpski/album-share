@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router';
 
 class Register extends React.Component {
 
@@ -6,6 +7,10 @@ class Register extends React.Component {
 		super(props);
 		this.state = {username: '', password: '', confirmation: ''}
 	}
+
+  componentDidMount(){
+    this.usernameInput.focus();
+  }
 
 	changeUsername(e){
     this.setState({username: e.target.value})
@@ -25,12 +30,15 @@ class Register extends React.Component {
 
   render(){
     return (
-    	<form action='/api/register' method='POST' onSubmit={this.submit.bind(this)}>
-        <input name='username' placeholder='Username' onChange={this.changeUsername.bind(this)} value={this.state.username}></input>
-        <input name='password' type='password' placeholder='Password' onChange={this.changePassword.bind(this)}></input>
-        <input type='password' placeholder='Confirm password' onChange={this.changeConfirmation.bind(this)}></input>
-        <input name='submit' type='submit' value='Submit'></input>
-      </form>
+      <div>
+      	<form action='/api/register' method='POST' onSubmit={this.submit.bind(this)}>
+          <input name='username' placeholder='Username' onChange={this.changeUsername.bind(this)} value={this.state.username} ref={(input) => { this.usernameInput = input; }} />
+          <input name='password' type='password' placeholder='Password' onChange={this.changePassword.bind(this)}></input>
+          <input type='password' placeholder='Confirm password' onChange={this.changeConfirmation.bind(this)}></input>
+          <input name='submit' type='submit' value='Submit'></input>
+        </form>
+        <Link to='/login'>Login</Link>
+      </div>
     );
   }
 }

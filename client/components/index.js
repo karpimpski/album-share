@@ -6,6 +6,7 @@ import Index from './pages/Index';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
+
 ReactDOM.render((
   <Router history={browserHistory}>
     <Route path="/" component={Index}></Route>
