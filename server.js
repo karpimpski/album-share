@@ -55,11 +55,27 @@ passport.use(new LocalStrategy(
 
 app.use(express.static('./client/public'));
 
-app.post('/login',
+app.get('/api/currentuser', function(req, res){
+  if(req.user){
+    let user = req.user;
+    user.password = null;
+    res.end(JSON.stringify(req.user));
+  }
+  else{
+    res.end(JSON.stringify(null));
+  }
+});
+
+app.get('/api/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
+app.post('/api/login',
   passport.authenticate('local', { successRedirect: '/',
                                    failureRedirect: '/login' }));
 
-app.post('/register', function(req, res){
+app.post('/api/register', function(req, res){
   User.find({username: req.body.username}, function(err, users){
     if(err) throw err;
     if(users.length == 0){
