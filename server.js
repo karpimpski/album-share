@@ -71,6 +71,13 @@ app.get('/api/logout', function(req, res){
   res.redirect('/');
 });
 
+app.post('/api/editprofile', function(req, res){
+  User.findByIdAndUpdate(req.user._id, { $set: { name: req.body.name, city: req.body.city, state: req.body.state }}, function (err, user) {
+    if (err) return handleError(err);
+    res.redirect('/profile');
+  });
+});
+
 app.post('/api/login',
   passport.authenticate('local', { successRedirect: '/',
                                    failureRedirect: '/login' }));

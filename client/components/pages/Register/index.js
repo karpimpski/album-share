@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router';
+import Header from '../../partials/Header';
 
 class Register extends React.Component {
 
@@ -31,6 +32,7 @@ class Register extends React.Component {
   render(){
     return (
       <div>
+      <Header />
       	<form action='/api/register' method='POST' onSubmit={this.submit.bind(this)}>
           <input name='username' placeholder='Username' onChange={this.changeUsername.bind(this)} value={this.state.username} ref={(input) => { this.usernameInput = input; }} />
           <input name='password' type='password' placeholder='Password' onChange={this.changePassword.bind(this)}></input>

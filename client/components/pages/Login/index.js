@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router';
+import Header from '../../partials/Header';
 
 class Login extends React.Component {
 
@@ -19,6 +20,7 @@ class Login extends React.Component {
   render(){
     return (
       <div>
+        <Header />
       	<form action='/api/login' method='POST'>
           <input name='username' placeholder='Username' ref={(input) => { this.usernameInput = input; }} />
           <input name='password' type='password' placeholder='Password' />
