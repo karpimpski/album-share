@@ -1,27 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.scss';
+import { Router, Route, Link, browserHistory } from 'react-router'
 
-class Index extends Component {
+import Index from './pages/Index';
 
-	constructor(props){
-		super(props);
-		this.state = {message: ''}
-	}
-
-	changeInput(e){
-		this.setState({message: e.target.value})
-	}
-
-  render(){
-    return (
-    	<div>
-    		<label>Message</label><br/>
-    		<input onChange={this.changeInput.bind(this)} value={this.state.message} />
-      	<h1>{this.state.message}</h1>
-      </div>
-    );
-  }
-}
-
-ReactDOM.render(<Index name='World'/>, document.getElementById('root'));
+ReactDOM.render((
+  <Router history={browserHistory}>
+    <Route path="/" component={Index}></Route>
+  </Router>
+), document.getElementById('root'))
