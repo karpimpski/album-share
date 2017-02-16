@@ -7,7 +7,8 @@ var userSchema = new Schema({
   name: String,
   city: String,
   state: String,
-  albums: {type: Array, default: []}
+  albums: {type: Array, default: []},
+  trades: {type: Array, default: []}
 });
 
 userSchema.methods.validPassword = function(pwd) {

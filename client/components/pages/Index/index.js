@@ -8,12 +8,15 @@ class Index extends React.Component {
 
 	constructor(props){
 		super(props);
-		this.state = {user: {username: ''}}
+		this.state = {user: {username: ''}, albums: []}
 	}
 
   componentDidMount(){
-    Client.get('/api/currentuser', (res) => {
-      this.setState({user: res});
+    Client.get('/api/currentuser', (user) => {
+      Client.get('/api/allalbums', (albums) => {
+        this.setState({user: user, albums: albums});
+        console.log(albums);
+      });
     });
   }
 
@@ -38,6 +41,17 @@ class Index extends React.Component {
         <Header user={this.state.user}/>
     		{message}
     		{form}
+
+        {this.state.albums.map(function(album, i){
+          return(
+            <div key={i}>
+              <h1>{album.name}</h1>
+              <img src={album.image}/>
+              <h2>{album.artist}</h2>
+              <h3>{album.user}</h3>
+            </div>
+          )
+        })}
       </div>
     );
   }

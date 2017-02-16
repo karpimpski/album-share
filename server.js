@@ -75,6 +75,13 @@ app.get('/api/logout', function(req, res){
   res.redirect('/');
 });
 
+app.get('/api/allalbums', function(req, res){
+  Album.find({}, function(err, albums){
+    if(err) throw err;
+    res.end(JSON.stringify(albums));
+  });
+});
+
 app.post('/api/editprofile', function(req, res){
   User.findByIdAndUpdate(req.user._id, { 
       $set: { name: req.body.name, city: req.body.city, state: req.body.state }
@@ -88,36 +95,58 @@ app.post('/api/editprofile', function(req, res){
 
 app.post('/api/newalbum', function(req, res){
   const album = encodeURIComponent(req.body.album);
-  Album.findOne({name: req.body.album}, function(err, al){
+  Album.findOne({name: {$regex: req.body.album, $options: 'i'}}, function(err, al){
     if(err) throw err;
     if(al){
-      res.end(JSON.stringify(false));
+      console.log('found');
+      res.redirect('/');
     }
     else{
       const url = 'https://api.spotify.com/v1/search?q='+ album +'&type=album';
       request(url, (error, response, body) => {
         if (!error && response.statusCode == 200) {
           const response = JSON.parse(body);
-          const artist = response.albums.items[0].artists[0];
-          console.log(artist);
-          Album.create({
-            name: response.albums.items[0].name,
-            image: response.albums.items[0].images[2].url,
-            user: req.user.username,
-            artist: artist
-          }, function(err, a){
-            if(err) res.end(JSON.stringify(false));
-            User.findByIdAndUpdate(req.user._id, { 
-                $push: { albums: a.name }
-              },function (err, user) {
-                  if (err) throw err;
-                  res.redirect('/');
-                });
-          });
+          if(response.albums.items[0]){
+            const artist = response.albums.items[0].artists[0].name;
+            console.log(artist);
+            Album.create({
+              name: response.albums.items[0].name,
+              image: response.albums.items[0].images[2].url,
+              user: req.user.username,
+              artist: artist
+            }, function(err, a){
+              if(err) res.end(JSON.stringify(false));
+              User.findByIdAndUpdate(req.user._id, { 
+                  $push: { albums: a.name }
+                },function (err, user) {
+                    if (err) throw err;
+                    res.redirect('/');
+                  });
+            });
+          }
+          else{
+            res.redirect('/');
+          }
         }
       });
     }
   });
+});
+
+app.post('/api/newtrade', function(req, res){
+  const trade = {
+    receiver: req.body.receiver,
+    giver: req.body.giver,
+    receiving: req.body.receiving,
+    giving: req.body.giving
+  }
+  User.findOneAndUpdate({name: req.body.receiver}, {push: {trades: trade}}, function(err){
+    if(err) throw err;
+    User.findOneAndUpdate({name: req.body.giver}, {push: {trades: trade}}, function(err){
+      if(err) throw err;
+      res.end('success');
+    })
+  })
 });
 
 app.post('/api/login',
