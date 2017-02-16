@@ -19,12 +19,14 @@ class Index extends React.Component {
 
   render(){
     let message = '';
+    let form = '';
     if(this.state.user){
-      if(this.state.user.username == ''){
-        message = '';
-      }
-      else
-        {message = <h1>Hello, {this.state.user.username}!</h1>
+      if(this.state.user.username !== ''){
+        message = <h1>Hello, {this.state.user.username}!</h1>;
+        form = <form action='/api/newalbum' method='POST'>
+    		  <input name='album' />
+    		  <input type='submit' />
+    		</form>;
       }
     }
     else{
@@ -35,6 +37,7 @@ class Index extends React.Component {
     	<div>
         <Header user={this.state.user}/>
     		{message}
+    		{form}
       </div>
     );
   }

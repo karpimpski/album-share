@@ -6,7 +6,8 @@ var userSchema = new Schema({
   password: {type: String, required: true},
   name: String,
   city: String,
-  state: String
+  state: String,
+  albums: {type: Array, default: []}
 });
 
 userSchema.methods.validPassword = function(pwd) {

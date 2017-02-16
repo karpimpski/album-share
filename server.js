@@ -1,5 +1,8 @@
+'use strict';
+
 const express = require('express');
 const app = express();
+const request = require('request');
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DB_URI);
 
@@ -27,6 +30,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const User = require('./models/user.js');
+const Album = require('./models/album.js');
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -72,9 +76,47 @@ app.get('/api/logout', function(req, res){
 });
 
 app.post('/api/editprofile', function(req, res){
-  User.findByIdAndUpdate(req.user._id, { $set: { name: req.body.name, city: req.body.city, state: req.body.state }}, function (err, user) {
-    if (err) return handleError(err);
-    res.redirect('/profile');
+  User.findByIdAndUpdate(req.user._id, { 
+      $set: { name: req.body.name, city: req.body.city, state: req.body.state }
+    }, 
+    function (err, user) {
+      if (err) throw err;
+      res.redirect('/profile');
+    }
+  );
+});
+
+app.post('/api/newalbum', function(req, res){
+  const album = encodeURIComponent(req.body.album);
+  Album.findOne({name: req.body.album}, function(err, al){
+    if(err) throw err;
+    if(al){
+      res.end(JSON.stringify(false));
+    }
+    else{
+      const url = 'https://api.spotify.com/v1/search?q='+ album +'&type=album';
+      request(url, (error, response, body) => {
+        if (!error && response.statusCode == 200) {
+          const response = JSON.parse(body);
+          const artist = response.albums.items[0].artists[0];
+          console.log(artist);
+          Album.create({
+            name: response.albums.items[0].name,
+            image: response.albums.items[0].images[2].url,
+            user: req.user.username,
+            artist: artist
+          }, function(err, a){
+            if(err) res.end(JSON.stringify(false));
+            User.findByIdAndUpdate(req.user._id, { 
+                $push: { albums: a.name }
+              },function (err, user) {
+                  if (err) throw err;
+                  res.redirect('/');
+                });
+          });
+        }
+      });
+    }
   });
 });
 
