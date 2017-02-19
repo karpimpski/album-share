@@ -7,14 +7,16 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
+import Trade from './pages/Trade';
 
 
 ReactDOM.render((
   <Router history={browserHistory}>
-    <Route path="/" component={Index}></Route>
-    <Route path='/login' component={Login}></Route>
-    <Route path='/register' component={Register}></Route>
-    <Route path='/profile' component={Profile}></Route>
-    <Route path='/editprofile' component={EditProfile}></Route>
+    <Route path="/" component={Index} />
+    <Route path='/login' component={Login} />
+    <Route path='/register' component={Register} />
+    <Route path='/profile' component={Profile} />
+    <Route path='/editprofile' component={EditProfile} />
+    <Route path='/trade' component={Trade} />
   </Router>
 ), document.getElementById('root'))
