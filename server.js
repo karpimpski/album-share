@@ -71,7 +71,7 @@ app.get('/api/currentuser', function(req, res){
 });
 
 app.get('/api/user/:name', function(req, res){
-  User.findOne({username: name}, function(err, user){
+  User.findOne({username: req.params.name}, function(err, user){
     if(err) throw err;
     if(user){
       res.end(JSON.stringify(user));
@@ -146,22 +146,25 @@ app.post('/api/newalbum', function(req, res){
 });
 
 app.post('/api/newtrade', function(req, res){
+  const s = req.body.self;
+  const o = req.body.other;
   let trade = {
-    target: req.body.target,
     self: req.body.self,
     other: req.body.other,
-    receiving: req.body.receiving,
+    getting: req.body.getting,
     giving: req.body.giving
   }
-  User.findOneAndUpdate({name: req.body.self}, {push: {trades: trade}}, function(err){
+  User.findOneAndUpdate({name: s}, {$push: {trades: trade}}, function(err){
     if(err) throw err;
     trade.self = req.body.other;
     trade.other = req.body.self;
-    trade.receiving = req.body.giving;
-    trade.giving = req.body.receiving;
-    User.findOneAndUpdate({name: req.body.giver}, {push: {trades: trade}}, function(err){
+    trade.getting = req.body.giving;
+    trade.giving = req.body.getting;
+    User.findOneAndUpdate({name: o}, {$push: {trades: trade}}, function(err){
+      console.log(s);
+      console.log(o);
       if(err) throw err;
-      res.end('success');
+      res.end(JSON.stringify('success'));
     })
   })
 });

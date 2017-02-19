@@ -10,39 +10,61 @@ class Trade extends React.Component {
 		this.state = {
       self: {albums: []}, 
       other: {albums: []}, 
-      receiving: [], 
-      giving: [], 
-      values: []
+      getting: '', 
+      giving: ''
     }
 	}
 
   componentDidMount(){
     Client.get('/api/currentuser', user => {
-      this.setState({self: user});
-      console.log(this.state.values);
+      Client.get('/api/user/' + this.props.params.other, other => {
+        this.setState({
+          self: user,
+          giving: user.albums[0],
+          other: other,
+          getting: other.albums[0]
+        });
+      });
     });
   }
 
   handleChange(event, i) {
-    console.log(event);
     let values = this.state.values;
     values[i] = event.target.value;
     this.setState({values: values});
-    console.log(this.state.values);
+  }
+
+  changeGiving(e){
+    this.setState({giving: e.target.value});
+    console.log(e.target.value);
+  }
+
+  changeGetting(e){
+    this.setState({getting: e.target.value});
+    console.log(e.target.value);
   }
 
   handleSubmit(event) {
     event.preventDefault();
+    const data = {
+      self: this.state.self,
+      giving: this.state.giving,
+      other: this.state.other,
+      getting: this.state.getting
+    }
+    Client.post('/api/newtrade', data, function(res){
+      alert(res);
+    });
   }
 
   render(){
     return (
       <div>
         <Header />
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmit.bind(this)}>
           <label>
             You are giving:
-            <select value={this.state.values[0]} onChange={this.handleChange.bind(this, event, 0)}>
+            <select value={this.state.giving} onChange={this.changeGiving.bind(this)}>
               {this.state.self.albums.map((value, i) => {
                 return (
                   <option key={i} value={value}>{value}</option>
@@ -50,6 +72,18 @@ class Trade extends React.Component {
               })}
             </select>
           </label>
+
+          <label>
+            You are getting:
+            <select value={this.state.getting} onChange={this.changeGetting.bind(this)}>
+              {this.state.other.albums.map((value, i) => {
+                return (
+                  <option key={i} value={value}>{value}</option>
+                )
+              })}
+            </select>
+          </label>
+
           <input type="submit" value="Submit" />
         </form>
       </div>
