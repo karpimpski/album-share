@@ -18,7 +18,7 @@ class Trade extends React.Component {
 
   componentDidMount(){
     Client.get('/api/currentuser', user => {
-      this.setState({self: user, values: [user.albums[0]]});
+      this.setState({self: user});
       console.log(this.state.values);
     });
   }
@@ -37,19 +37,22 @@ class Trade extends React.Component {
 
   render(){
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          You are giving:
-          <select value={this.state.values[0]} onChange={this.handleChange.bind(this, event, 0)}>
-            {this.state.self.albums.map((value, i) => {
-              return (
-                <option key={i} value={value}>{value}</option>
-              )
-            })}
-          </select>
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+      <div>
+        <Header />
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            You are giving:
+            <select value={this.state.values[0]} onChange={this.handleChange.bind(this, event, 0)}>
+              {this.state.self.albums.map((value, i) => {
+                return (
+                  <option key={i} value={value}>{value}</option>
+                )
+              })}
+            </select>
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+      </div>
     );
   }
 }
