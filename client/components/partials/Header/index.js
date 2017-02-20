@@ -18,7 +18,7 @@ class Header extends React.Component{
 	render(){
 		let links = '';
 	  if(this.state.user){
-	    links = <div><a href='/api/logout'>Logout</a> <Link to='/profile'>Profile</Link></div>
+	    links = <div><a href='/api/logout'>Logout</a> <Link to='/profile'>Profile</Link> <Link to='/trades'>Trades</Link> </div>
 	  }
 	  else{
 	    links = <div><Link to='/login'>Login</Link> <Link to='/register'>Register</Link></div>

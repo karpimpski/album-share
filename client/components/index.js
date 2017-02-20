@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Trade from './pages/Trade';
+import Trades from './pages/Trades';
 import NotFound from './pages/NotFound';
 
 
@@ -19,6 +20,7 @@ ReactDOM.render((
     <Route path='/profile' component={Profile} />
     <Route path='/editprofile' component={EditProfile} />
     <Route path='/trade/:other' component={Trade} />
+    <Route path='/trades' component={Trades} />
     <Route path='*' component={NotFound} />
   </Router>
 ), document.getElementById('root'))

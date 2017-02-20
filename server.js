@@ -95,6 +95,13 @@ app.get('/api/allalbums', function(req, res){
   });
 });
 
+app.get('/api/trade/:id', function(req, res){
+  Trade.findById(req.params.id, function(err, trade){
+    if(err) throw err;
+    res.end(JSON.stringify(trade));
+  });
+});
+
 app.post('/api/editprofile', function(req, res){
   User.findByIdAndUpdate(req.user._id, { 
       $set: { name: req.body.name, city: req.body.city, state: req.body.state }
@@ -157,7 +164,7 @@ app.post('/api/newtrade', function(req, res){
       if(err) throw err;
       User.findOneAndUpdate({username: req.body.target}, {$push: {trades: trade._id}}, function(err){
         if(err) throw err;
-        res.end(JSON.stringify('success'));
+        res.redirect('/');
       });
     });
   });
