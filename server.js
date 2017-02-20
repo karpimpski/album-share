@@ -31,6 +31,7 @@ app.use(passport.session());
 
 const User = require('./models/user.js');
 const Album = require('./models/album.js');
+const Trade = require('./models/trade.js');
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -110,7 +111,6 @@ app.post('/api/newalbum', function(req, res){
   Album.findOne({name: {$regex: req.body.album, $options: 'i'}}, function(err, al){
     if(err) throw err;
     if(al){
-      console.log('found');
       res.redirect('/');
     }
     else{
@@ -120,7 +120,6 @@ app.post('/api/newalbum', function(req, res){
           const response = JSON.parse(body);
           if(response.albums.items[0]){
             const artist = response.albums.items[0].artists[0].name;
-            console.log(artist);
             Album.create({
               name: response.albums.items[0].name,
               image: response.albums.items[0].images[2].url,
@@ -146,27 +145,22 @@ app.post('/api/newalbum', function(req, res){
 });
 
 app.post('/api/newtrade', function(req, res){
-  const s = req.body.self;
-  const o = req.body.other;
-  let trade = {
-    self: req.body.self,
-    other: req.body.other,
-    getting: req.body.getting,
-    giving: req.body.giving
-  }
-  User.findOneAndUpdate({name: s}, {$push: {trades: trade}}, function(err){
+  Trade.create({
+    requester: req.body.requester,
+    target: req.body.target,
+    requesting: req.body.requesting,
+    offering: req.body.offering
+  }, 
+  function(err, trade){
     if(err) throw err;
-    trade.self = req.body.other;
-    trade.other = req.body.self;
-    trade.getting = req.body.giving;
-    trade.giving = req.body.getting;
-    User.findOneAndUpdate({name: o}, {$push: {trades: trade}}, function(err){
-      console.log(s);
-      console.log(o);
+    User.findOneAndUpdate({username: req.body.requester}, {$push: {trades: trade._id}}, function(err){
       if(err) throw err;
-      res.end(JSON.stringify('success'));
-    })
-  })
+      User.findOneAndUpdate({username: req.body.target}, {$push: {trades: trade._id}}, function(err){
+        if(err) throw err;
+        res.end(JSON.stringify('success'));
+      });
+    });
+  });
 });
 
 app.post('/api/login',
@@ -179,14 +173,11 @@ app.post('/api/register', function(req, res){
     if(users.length == 0){
       var user = new User({ username: req.body.username, password: req.body.password });
       user.save(function (err) {
-        if (err) {
-          console.log(err);
-        } else {
-          req.login(user, function(err){
-            if(err) throw err;
-            res.redirect('/');
-          });
-        }
+        if(err) throw err;
+        req.login(user, function(err){
+          if(err) throw err;
+          res.redirect('/');
+        });
       });
     }
     else{

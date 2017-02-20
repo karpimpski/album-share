@@ -10,8 +10,6 @@ class Trade extends React.Component {
 		this.state = {
       self: {albums: []}, 
       other: {albums: []}, 
-      getting: '', 
-      giving: ''
     }
 	}
 
@@ -20,40 +18,9 @@ class Trade extends React.Component {
       Client.get('/api/user/' + this.props.params.other, other => {
         this.setState({
           self: user,
-          giving: user.albums[0],
-          other: other,
-          getting: other.albums[0]
+          other: other
         });
       });
-    });
-  }
-
-  handleChange(event, i) {
-    let values = this.state.values;
-    values[i] = event.target.value;
-    this.setState({values: values});
-  }
-
-  changeGiving(e){
-    this.setState({giving: e.target.value});
-    console.log(e.target.value);
-  }
-
-  changeGetting(e){
-    this.setState({getting: e.target.value});
-    console.log(e.target.value);
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-    const data = {
-      self: this.state.self,
-      giving: this.state.giving,
-      other: this.state.other,
-      getting: this.state.getting
-    }
-    Client.post('/api/newtrade', data, function(res){
-      alert(res);
     });
   }
 
@@ -61,13 +28,15 @@ class Trade extends React.Component {
     return (
       <div>
         <Header />
-        <form onSubmit={this.handleSubmit.bind(this)}>
+        <form method='POST' action='/api/newtrade'>
+          <input name='requester' value={this.state.self.username} />
+          <input name='target' value={this.state.other.username} />
           <label>
             You are giving:
-            <select value={this.state.giving} onChange={this.changeGiving.bind(this)}>
+            <select name='offering'>
               {this.state.self.albums.map((value, i) => {
                 return (
-                  <option key={i} value={value}>{value}</option>
+                  <option key={i}>{value}</option>
                 )
               })}
             </select>
@@ -75,10 +44,10 @@ class Trade extends React.Component {
 
           <label>
             You are getting:
-            <select value={this.state.getting} onChange={this.changeGetting.bind(this)}>
+            <select name='requesting'>
               {this.state.other.albums.map((value, i) => {
                 return (
-                  <option key={i} value={value}>{value}</option>
+                  <option key={i}>{value}</option>
                 )
               })}
             </select>
