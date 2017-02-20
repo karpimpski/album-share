@@ -17,8 +17,9 @@ class Trades extends React.Component {
   componentDidMount(){
     Client.get('/api/currentuser', user => {
       this.setState({user: user});
-      for(var i in user.trades){
-        Client.get('/api/trade/' + user.trades[0], (res) => {
+      console.log(user.trades);
+      for(let i in user.trades){
+        Client.get('/api/trade/' + user.trades[i], (res) => {
           if(res.requester === this.state.user.username){
             console.log(res.requester);
             let currentTrades = this.state.tradesSent;
